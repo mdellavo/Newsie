@@ -8,9 +8,10 @@ import android.widget.TextView;
 
 import org.quuux.newsie.Log;
 import org.quuux.newsie.R;
-import org.quuux.newsie.data.DataStore;
+import org.quuux.newsie.data.FeedCache;
 import org.quuux.newsie.data.Feed;
 import org.quuux.newsie.data.FeedGroup;
+import org.quuux.newsie.data.FeedNode;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         }
     }
 
-    private final List<Feed> feeds = new LinkedList<>();
+    private final List<FeedNode> feeds = new LinkedList<>();
 
     public FeedAdapter() {
         update();
@@ -49,17 +50,19 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     @Override
     public void onBindViewHolder(FeedViewHolder viewHolder, int position) {
-        final Feed feed = feeds.get(position);
-        viewHolder.title.setText(feed.getTitle());
-        viewHolder.url.setText(feed.getUrl());
+        final FeedNode feed = feeds.get(position);
+        viewHolder.title.setText(feed.getDisplayName());
 
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null)
-                    listener.onFeedClicked(feed);
-            }
-        });
+        if (feed instanceof Feed) {
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null)
+                        listener.onFeedClicked((Feed) feed);
+
+                }
+            });
+        }
     }
 
     @Override
@@ -70,18 +73,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     public void update() {
         feeds.clear();
 
-        final DataStore dataStore = DataStore.getInstance();
-        addFeeds(dataStore.getFeeds());
+        final FeedCache cache = FeedCache.getInstance();
+        addFeeds(cache.getRoot());
     }
 
-    private void addFeeds(List<Feed> feeds) {
-        for (final Feed feed : feeds) {
+    private void addFeeds(FeedGroup group) {
+        for (final FeedNode feed : group.getFeeds()) {
             this.feeds.add(feed);
             if (feed instanceof FeedGroup)
-                addFeeds(((FeedGroup) feed).getFeeds());
+                addFeeds((FeedGroup) feed);
         }
-
-        Log.d(TAG, "added %s feeds", feeds.size());
     }
 
     public void setListener(Listener listener) {

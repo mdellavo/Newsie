@@ -52,7 +52,6 @@ public class IndexFragment extends Fragment implements FeedAdapter.Listener {
         adapter.setListener(this);
         list.setAdapter(adapter);
 
-
         return view;
     }
 

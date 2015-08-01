@@ -1,6 +1,7 @@
 package org.quuux.newsie;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Patterns;
@@ -12,7 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.quuux.newsie.data.DataStore;
+import org.quuux.newsie.data.FeedCache;
 import org.quuux.newsie.data.Feed;
 import org.quuux.newsie.data.FeedUtils;
 
@@ -67,22 +68,15 @@ public class AddFeedActivity extends AppCompatActivity implements FeedUtils.Feed
     }
 
     @Override
-    public void onFeedDiscovery(List<Feed> feeds) {
+    public void onFeedDiscovery(final List<Feed> feeds) {
         adapter = new Adapter(feeds);
         list.setAdapter(adapter);
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemClick(final AdapterView<?> parent, final View view, int position, long id) {
         final Feed feed = (Feed) adapter.getItem(position);
-        FeedUtils.parseUrlAsync(feed.getUrl(), new FeedUtils.FeedParseListener() {
-            @Override
-            public void onFeedParsed(List<Feed> feeds) {
-                Log.d(TAG, "parsed %s feeds", feeds.size());
-                for (Feed feed : feeds)
-                    DataStore.getInstance().addFeed(feed);
-            }
-        });
+        FeedCache.getInstance().addFeed(this, feed);
     }
 
     static class Holder {

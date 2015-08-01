@@ -34,9 +34,8 @@ public class FeedUtils {
 
         final List<Feed> feeds = new ArrayList<>();
         for (Element link : links) {
-            final Feed feed = new Feed();
+            final Feed feed = new Feed(link.attr("href"));
             feed.setTitle(link.attr("title"));
-            feed.setUrl(link.attr("href"));
             feeds.add(feed);
         }
 
@@ -65,13 +64,13 @@ public class FeedUtils {
     }
 
     final static String ns = null;
-    private static List<Feed> parse(InputStream in) throws XmlPullParserException, IOException {
+    private static List<Feed> parse(InputStream in, final String url) throws XmlPullParserException, IOException {
         try {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             parser.setInput(in, null);
             parser.nextTag();
-            return readFeed(parser);
+            return readFeed(parser, url);
         } finally {
             in.close();
         }
@@ -88,37 +87,21 @@ public class FeedUtils {
         return conn.getInputStream();
     }
 
-    public static List<Feed> parseUrl(final String url) throws IOException, XmlPullParserException {
-        return parse(new BufferedInputStream(fetchUrl(url)));
+    public static List<Feed> parseUrl(final String url) {
+        try {
+            return parse(new BufferedInputStream(fetchUrl(url)), url);
+        } catch (XmlPullParserException | IOException e) {
+            Log.e(TAG, "error fetching feed", e);
+        }
+
+        return null;
     }
 
     public interface FeedParseListener {
         void onFeedParsed(final List<Feed> feeds);
     }
 
-    public static void parseUrlAsync(final String url, final FeedParseListener listener) {
-        new AsyncTask<Void, Void, List<Feed>>() {
-
-            @Override
-            protected List<Feed> doInBackground(Void... params) {
-                try {
-                    return parseUrl(url);
-                } catch (IOException | XmlPullParserException e) {
-                    Log.e(TAG, "error parsing feed", e);
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(List<Feed> feeds) {
-                super.onPostExecute(feeds);
-                if (listener != null)
-                    listener.onFeedParsed(feeds);
-            }
-        }.execute();
-    }
-
-    private static List<Feed> readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private static List<Feed> readFeed(XmlPullParser parser, final String url) throws XmlPullParserException, IOException {
 
         final List<Feed> feeds = new ArrayList<>();
 
@@ -129,7 +112,7 @@ public class FeedUtils {
             }
             String name = parser.getName();
             if (name.equals("channel")) {
-                final Feed feed = readChannel(parser);
+                final Feed feed = readChannel(parser, url);
                 feeds.add(feed);
             } else {
                 skip(parser);
@@ -138,9 +121,9 @@ public class FeedUtils {
         return feeds;
     }
 
-    private static Feed readChannel(XmlPullParser parser) throws IOException, XmlPullParserException {
+    private static Feed readChannel(XmlPullParser parser, final String url) throws IOException, XmlPullParserException {
 
-        final Feed feed = new Feed();
+        final Feed feed = new Feed(url);
 
         parser.require(XmlPullParser.START_TAG, ns, "channel");
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -155,8 +138,8 @@ public class FeedUtils {
                 final String description = readSimpleValue(parser, "description");
                 feed.setDescription(description);
             } else if (name.equals("link")) {
-                final String url = readSimpleValue(parser, "link");
-                feed.setUrl(url);
+                final String link = readSimpleValue(parser, "link");
+                feed.setLink(link);
             } else if (name.equals("item")) {
                 final FeedItem item = readItem(parser);
                 feed.addItem(item);

@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import org.quuux.newsie.Log;
 import org.quuux.newsie.R;
-import org.quuux.newsie.data.DataStore;
+import org.quuux.newsie.data.FeedCache;
 import org.quuux.newsie.data.Feed;
 import org.quuux.newsie.data.FeedItem;
 
@@ -45,7 +45,7 @@ public class FeedFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             final String feedUrl = getArguments().getString(ARG_FEED_URL);
-            feed = DataStore.getInstance().getFeed(feedUrl);
+            feed = FeedCache.getInstance().getFeed(feedUrl);
         }
     }
 

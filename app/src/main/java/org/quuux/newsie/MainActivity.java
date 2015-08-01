@@ -9,8 +9,10 @@ import android.view.MenuItem;
 import android.widget.ListView;
 
 import org.quuux.newsie.data.Feed;
+import org.quuux.newsie.data.FeedCache;
 import org.quuux.newsie.ui.FeedFragment;
 import org.quuux.newsie.ui.IndexFragment;
+import org.quuux.newsie.ui.ProgressFragment;
 
 
 public class MainActivity extends AppCompatActivity implements IndexFragment.Listener, FeedFragment.Listener {
@@ -26,7 +28,23 @@ public class MainActivity extends AppCompatActivity implements IndexFragment.Lis
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.drawer);
 
+        showProgress();
+
+        FeedCache.getInstance().scanFeeds(this, new Runnable() {
+            @Override
+            public void run() {
+                onFeedsLoaded();
+            }
+        });
+    }
+
+    private void onFeedsLoaded() {
         showIndex();
+    }
+
+    private void showProgress() {
+        final ProgressFragment frag = ProgressFragment.newInstance();
+        fragReplace(frag, "progress");
     }
 
     private void showIndex() {
