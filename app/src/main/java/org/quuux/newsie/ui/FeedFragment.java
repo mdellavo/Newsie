@@ -1,6 +1,8 @@
 package org.quuux.newsie.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
 
@@ -37,8 +41,7 @@ public class FeedFragment extends Fragment {
         return fragment;
     }
 
-    public FeedFragment() {
-    }
+    public FeedFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,7 +58,6 @@ public class FeedFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
         list = (RecyclerView) view.findViewById(R.id.list);
-        list.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         list.setLayoutManager(layoutManager);
 
@@ -90,10 +92,31 @@ public class FeedFragment extends Fragment {
         TextView title;
         WebView content;
 
+        @SuppressLint("SetJavaScriptEnabled")
         public FeedItemViewHolder(View itemView) {
             super(itemView);
             title = (TextView)itemView.findViewById(R.id.title);
             content = (WebView)itemView.findViewById(R.id.content);
+
+            final WebSettings settings = content.getSettings();
+            settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+            settings.setUseWideViewPort(true);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+
+            settings.setLoadsImagesAutomatically(true);
+
+            if  (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                settings.setAllowFileAccessFromFileURLs(true);
+                settings.setAllowUniversalAccessFromFileURLs(true);
+            }
+
+            CookieManager.getInstance().setAcceptCookie(true);
+
+            settings.setJavaScriptEnabled(true);
+
+            content.setBackgroundColor(content.getResources().getColor(android.R.color.white));
         }
     }
 
@@ -102,6 +125,11 @@ public class FeedFragment extends Fragment {
         final Feed feed;
         public Adapter(final Feed feed) {
             this.feed = feed;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
         }
 
         @Override

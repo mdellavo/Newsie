@@ -1,6 +1,7 @@
 package org.quuux.newsie;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -44,16 +45,20 @@ public class MainActivity extends AppCompatActivity implements IndexFragment.Lis
 
     private void showProgress() {
         final ProgressFragment frag = ProgressFragment.newInstance();
-        fragReplace(frag, "progress");
+        fragReplace(frag, "progress", false);
     }
 
     private void showIndex() {
         final IndexFragment frag = IndexFragment.newInstance();
-        fragReplace(frag, "index");
+        fragReplace(frag, "index", false);
     }
 
-    private void fragReplace(final Fragment frag, final String tag) {
-        getFragmentManager().beginTransaction().replace(R.id.content, frag, tag).commit();
+    private void fragReplace(final Fragment frag, final String tag, final boolean addToBackStack) {
+        final FragmentTransaction t = getFragmentManager().beginTransaction();
+        t.replace(R.id.content, frag, tag);
+        if (addToBackStack)
+            t.addToBackStack(null);
+        t.commit();
     }
 
     @Override
@@ -74,8 +79,17 @@ public class MainActivity extends AppCompatActivity implements IndexFragment.Lis
     }
 
     @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() > 0 ){
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void openFeed(Feed feed) {
         final FeedFragment frag = FeedFragment.newInstance(feed);
-        fragReplace(frag, "feed-" + feed.getUrl());
+        fragReplace(frag, "feed-" + feed.getUrl(), true);
     }
 }

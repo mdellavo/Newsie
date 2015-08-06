@@ -82,6 +82,8 @@ public class FeedCache {
             for (String filename : filenames) {
                 final File file = new File(path, filename);
 
+                Log.d(TAG, "consider: %s", file);
+
                 FeedNode feed = null;
                 if (file.isDirectory()) {
                     feed = loadFeedGroup(file);

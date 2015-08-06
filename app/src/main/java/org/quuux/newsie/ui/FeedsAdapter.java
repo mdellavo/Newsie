@@ -4,7 +4,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.quuux.newsie.Log;
 import org.quuux.newsie.R;
@@ -16,9 +19,9 @@ import org.quuux.newsie.data.FeedNode;
 import java.util.LinkedList;
 import java.util.List;
 
-public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
+public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedViewHolder> {
 
-    private static final String TAG = Log.buildTag(FeedAdapter.class);
+    private static final String TAG = Log.buildTag(FeedsAdapter.class);
     private Listener listener;
 
     public interface Listener {
@@ -26,18 +29,19 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     }
 
     public static class FeedViewHolder extends RecyclerView.ViewHolder {
-        final TextView title, url;
+        final ImageView icon;
+        final TextView title;
 
         public FeedViewHolder(View itemView) {
             super(itemView);
             title = (TextView)itemView.findViewById(R.id.title);
-            url = (TextView)itemView.findViewById(R.id.url);
+            icon = (ImageView)itemView.findViewById(R.id.icon);
         }
     }
 
     private final List<FeedNode> feeds = new LinkedList<>();
 
-    public FeedAdapter() {
+    public FeedsAdapter() {
         update();
     }
 
@@ -50,8 +54,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     @Override
     public void onBindViewHolder(FeedViewHolder viewHolder, int position) {
+
         final FeedNode feed = feeds.get(position);
         viewHolder.title.setText(feed.getDisplayName());
+
+        Picasso.with(viewHolder.icon.getContext()).load(feed.getIconUrl()).into(viewHolder.icon);
 
         if (feed instanceof Feed) {
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +66,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 public void onClick(View v) {
                     if (listener != null)
                         listener.onFeedClicked((Feed) feed);
-
                 }
             });
         }

@@ -13,12 +13,22 @@ public class FeedGroup implements FeedNode {
     }
 
     @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
     public String getDisplayName() {
             return name;
     }
 
     public List<FeedNode> getFeeds() {
         return feeds;
+    }
+
+    @Override
+    public String getIconUrl() {
+        return null;
     }
 
     public void addFeed(FeedNode feed) {

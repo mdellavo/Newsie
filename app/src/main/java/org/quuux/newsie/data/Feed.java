@@ -1,5 +1,7 @@
 package org.quuux.newsie.data;
 
+import android.net.Uri;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -14,8 +16,13 @@ public class Feed implements FeedNode {
     private Date pubDate;
     private List<FeedItem> items = new ArrayList<>();
 
-    public Feed(final String url) {
+    public Feed(final String url, final String title) {
         this.url = url;
+        this.title = title;
+    }
+
+    public Feed(final String url) {
+        this(url, null);
     }
 
     @Override
@@ -79,6 +86,15 @@ public class Feed implements FeedNode {
     @Override
     public List<FeedNode> getFeeds() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public String getIconUrl() {
+        final String url = getUrl();
+        if (url == null)
+            return null;
+        final Uri uri = Uri.parse(url);
+        return new Uri.Builder().scheme("http").authority(uri.getHost()).appendPath("favicon.ico").toString();
     }
 
     public void refresh(Feed other) {

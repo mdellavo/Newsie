@@ -1,6 +1,9 @@
 package org.quuux.newsie;
 
 
+import android.content.Intent;
+import android.os.Bundle;
+
 public class Log  {
 
     private final String mTag;
@@ -118,5 +121,12 @@ public class Log  {
 
     public void w(final String message, final Throwable tr,  Object...args) {
         Log.d(mTag, message, tr, args);
+    }
+
+    public static void dumpExtras(final String tag, Intent intent) {
+        final Bundle bundle = intent.getExtras();
+        for (final String key : bundle.keySet()) {
+            d(tag, "%s: %s", key, bundle.get(key));
+        }
     }
 }

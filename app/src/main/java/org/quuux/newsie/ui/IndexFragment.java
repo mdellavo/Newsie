@@ -13,12 +13,12 @@ import org.quuux.newsie.R;
 import org.quuux.newsie.data.Feed;
 
 
-public class IndexFragment extends Fragment implements FeedAdapter.Listener {
+public class IndexFragment extends Fragment implements FeedsAdapter.Listener {
 
     private RecyclerView list;
     private Listener listener;
     private LinearLayoutManager layoutManager;
-    private FeedAdapter adapter;
+    private FeedsAdapter adapter;
 
     public static IndexFragment newInstance() {
         IndexFragment fragment = new IndexFragment();
@@ -48,7 +48,7 @@ public class IndexFragment extends Fragment implements FeedAdapter.Listener {
         layoutManager = new LinearLayoutManager(getActivity());
         list.setLayoutManager(layoutManager);
 
-        adapter = new FeedAdapter();
+        adapter = new FeedsAdapter();
         adapter.setListener(this);
         list.setAdapter(adapter);
 
