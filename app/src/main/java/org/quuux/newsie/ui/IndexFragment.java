@@ -3,18 +3,25 @@ package org.quuux.newsie.ui;
 import android.app.Activity;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.otto.Subscribe;
+
+import org.quuux.newsie.EventBus;
 import org.quuux.newsie.R;
 import org.quuux.newsie.data.Feed;
+import org.quuux.newsie.data.FeedCache;
+import org.quuux.newsie.events.FeedsUpdated;
 
 
-public class IndexFragment extends Fragment implements FeedsAdapter.Listener {
+public class IndexFragment extends Fragment implements FeedsAdapter.Listener, SwipeRefreshLayout.OnRefreshListener {
 
+    private SwipeRefreshLayout ptr;
     private RecyclerView list;
     private Listener listener;
     private LinearLayoutManager layoutManager;
@@ -41,6 +48,9 @@ public class IndexFragment extends Fragment implements FeedsAdapter.Listener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_index, container, false);
+
+        ptr = (SwipeRefreshLayout)view.findViewById(R.id.ptr);
+        ptr.setOnRefreshListener(this);
 
         list = (RecyclerView)view.findViewById(R.id.list);
 
@@ -73,8 +83,30 @@ public class IndexFragment extends Fragment implements FeedsAdapter.Listener {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        EventBus.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        EventBus.getInstance().unregister(this);
+    }
+
+    @Override
     public void onFeedClicked(Feed feed) {
         listener.openFeed(feed);
+    }
+
+    @Override
+    public void onRefresh() {
+        FeedCache.getInstance().updateFeeds();
+    }
+
+    @Subscribe
+    public void onFeedsUpdated(final FeedsUpdated event) {
+        adapter.update();
     }
 
     public interface Listener {

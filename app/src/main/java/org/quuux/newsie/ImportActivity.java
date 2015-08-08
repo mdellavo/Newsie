@@ -63,7 +63,7 @@ public class ImportActivity extends AppCompatActivity implements OPMLParser.Pars
 
     private void importFeeds(List<Feed> importedFeeds) {
         for (Feed feed : importedFeeds) {
-            FeedCache.getInstance().addFeed(this, feed);
+            FeedCache.getInstance().addFeed(feed);
         }
     }
 

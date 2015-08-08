@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,18 +100,12 @@ public class FeedFragment extends Fragment {
             content = (WebView)itemView.findViewById(R.id.content);
 
             final WebSettings settings = content.getSettings();
-            settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-            settings.setUseWideViewPort(true);
+            settings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                 settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
 
             settings.setLoadsImagesAutomatically(true);
-
-            if  (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                settings.setAllowFileAccessFromFileURLs(true);
-                settings.setAllowUniversalAccessFromFileURLs(true);
-            }
 
             CookieManager.getInstance().setAcceptCookie(true);
 
@@ -145,7 +140,25 @@ public class FeedFragment extends Fragment {
             holder.title.setText(item.getTitle());
             final String mime = "text/html";
             final String encoding = "utf-8";
-            holder.content.loadDataWithBaseURL(null, item.getContent(), mime, encoding, null);
+
+            final StringBuilder contentBuilder = new StringBuilder();
+            contentBuilder.append("<html>");
+            contentBuilder.append("<body>");
+
+            if (!TextUtils.isEmpty(item.getContent()))
+                contentBuilder.append(item.getContent());
+            else if (!TextUtils.isEmpty(item.getDescription()))
+                contentBuilder.append(item.getDescription());
+            else
+                contentBuilder.append("(no content)");
+
+            contentBuilder.append("</body>");
+            contentBuilder.append("</html>");
+
+            final String content = contentBuilder.toString();
+            Log.d(TAG, "content= %s", content);
+
+            holder.content.loadDataWithBaseURL(null, content, mime, encoding, null);
         }
 
         @Override

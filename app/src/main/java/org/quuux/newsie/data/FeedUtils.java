@@ -159,7 +159,6 @@ public class FeedUtils {
                 continue;
             }
             String name = parser.getName();
-            Log.d(TAG, "name: %s", name);
             if (name.equals("title")) {
                 final String title = readSimpleValue(parser, "title");
                 item.setTitle(title);

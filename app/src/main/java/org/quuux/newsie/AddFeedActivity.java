@@ -76,7 +76,7 @@ public class AddFeedActivity extends AppCompatActivity implements FeedUtils.Feed
     @Override
     public void onItemClick(final AdapterView<?> parent, final View view, int position, long id) {
         final Feed feed = (Feed) adapter.getItem(position);
-        FeedCache.getInstance().addFeed(this, feed);
+        FeedCache.getInstance().addFeed(feed);
     }
 
     static class Holder {

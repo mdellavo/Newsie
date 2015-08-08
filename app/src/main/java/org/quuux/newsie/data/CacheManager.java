@@ -7,12 +7,17 @@ import java.io.File;
 
 public class CacheManager {
 
-    public static File getFeedsPath(final Context context) {
-        final File base = context.getCacheDir();
+    private static File base;
+
+    public static void setCacheDir(final File base) {
+        CacheManager.base = base;
+    }
+
+    public static File getFeedsPath() {
         return new File(base, "feeds");
     }
 
-    public static File getFeedPath(final Context context, final Feed feed) {
+    public static File getFeedPath(final Feed feed) {
         final String url = feed.getUrl();
         final Uri uri = Uri.parse(url);
 
@@ -29,7 +34,7 @@ public class CacheManager {
         sb.append(url.hashCode());
         sb.append(".json");
 
-        return new File(getFeedsPath(context), sb.toString());
+        return new File(getFeedsPath(), sb.toString());
     }
 
 }

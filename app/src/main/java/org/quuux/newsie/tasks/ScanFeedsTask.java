@@ -1,0 +1,74 @@
+package org.quuux.newsie.tasks;
+
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Pair;
+
+import org.quuux.newsie.Log;
+import org.quuux.newsie.data.CacheManager;
+import org.quuux.newsie.data.Feed;
+import org.quuux.newsie.data.FeedCache;
+import org.quuux.newsie.data.FeedGroup;
+import org.quuux.newsie.data.FeedNode;
+import org.quuux.sack.Sack;
+
+import java.io.File;
+
+public class ScanFeedsTask extends AsyncTask<Void, Void, FeedGroup> {
+    private static final String TAG = Log.buildTag(ScanFeedsTask.class);
+
+    @Override
+    protected FeedGroup doInBackground(Void... params) {
+        return loadFeedGroup(CacheManager.getFeedsPath());
+    }
+
+    @Override
+    protected void onPostExecute(FeedGroup feedGroup) {
+        super.onPostExecute(feedGroup);
+        FeedCache.getInstance().setRoot(feedGroup);
+    }
+
+    private Feed loadFeed(final File path) {
+
+        Log.d(TAG, "loading feed: %s", path);
+
+        final Sack<Feed> sack = Sack.open(Feed.class, path);
+        final Pair<Sack.Status, Feed> result = sack.doLoad();
+        if (result.first == Sack.Status.ERROR) {
+            Log.d(TAG, "error loading feed: %s", path);
+            return null;
+        }
+
+        return result.second;
+    }
+
+    private FeedGroup loadFeedGroup(final File path) {
+
+        Log.d(TAG, "loaded feed group: %s", path);
+
+        final FeedGroup group = new FeedGroup(path.getName());
+
+        final String[] filenames = path.list();
+        if (filenames != null) {
+            for (String filename : filenames) {
+                final File file = new File(path, filename);
+
+                Log.d(TAG, "consider: %s", file);
+
+                FeedNode feed = null;
+                if (file.isDirectory()) {
+                    feed = loadFeedGroup(file);
+                } else if (filename.endsWith(".json")) {
+                    feed = loadFeed(file);
+                }
+
+                if (feed != null) {
+                    group.addFeed(feed);
+                }
+            }
+        }
+
+        return group;
+    }
+
+}
