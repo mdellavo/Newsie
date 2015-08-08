@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -57,6 +58,8 @@ public class ImportActivity extends AppCompatActivity implements OPMLParser.Pars
         switch (v.getId()) {
             case R.id.submit:
                 importFeeds(adapter.getImportedFeeds());
+                Toast.makeText(this, R.string.importing_feeds, Toast.LENGTH_SHORT).show();
+                finish();
                 break;
         }
     }

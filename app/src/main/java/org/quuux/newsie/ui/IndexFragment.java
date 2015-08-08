@@ -17,6 +17,7 @@ import org.quuux.newsie.R;
 import org.quuux.newsie.data.Feed;
 import org.quuux.newsie.data.FeedCache;
 import org.quuux.newsie.events.FeedsUpdated;
+import org.quuux.newsie.events.FeedsUpdating;
 
 
 public class IndexFragment extends Fragment implements FeedsAdapter.Listener, SwipeRefreshLayout.OnRefreshListener {
@@ -86,6 +87,8 @@ public class IndexFragment extends Fragment implements FeedsAdapter.Listener, Sw
     public void onResume() {
         super.onResume();
         EventBus.getInstance().register(this);
+
+        ptr.setRefreshing(FeedCache.getInstance().isUpdating());
     }
 
     @Override
@@ -106,7 +109,13 @@ public class IndexFragment extends Fragment implements FeedsAdapter.Listener, Sw
 
     @Subscribe
     public void onFeedsUpdated(final FeedsUpdated event) {
+        ptr.setRefreshing(false);
         adapter.update();
+    }
+
+    @Subscribe
+    public void onFeedsUpdating(final FeedsUpdating event) {
+        ptr.setRefreshing(true);
     }
 
     public interface Listener {

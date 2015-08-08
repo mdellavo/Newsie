@@ -19,8 +19,8 @@ public class NewsieApplication extends Application {
         FeedCache.getInstance().scanFeeds();
 
         try {
-            File httpCacheDir = new File(getExternalCacheDir(), "http");
-            long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
+            final File httpCacheDir = new File(getExternalCacheDir(), "http");
+            final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
             HttpResponseCache.install(httpCacheDir, httpCacheSize);
         } catch (IOException e) {
             Log.e(TAG, "error setting http cache", e);

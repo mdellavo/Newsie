@@ -6,12 +6,16 @@ import org.quuux.newsie.EventBus;
 import org.quuux.newsie.Log;
 import org.quuux.newsie.events.FeedUpdated;
 import org.quuux.newsie.events.FeedsLoaded;
+import org.quuux.newsie.events.FeedsUpdated;
+import org.quuux.newsie.events.FeedsUpdating;
 import org.quuux.newsie.tasks.ScanFeedsTask;
 import org.quuux.newsie.tasks.UpdateFeedTask;
 import org.quuux.sack.Sack;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FeedCache {
 
@@ -60,15 +64,36 @@ public class FeedCache {
         if (node instanceof Feed) {
             final Feed feed = (Feed)node;
             feedMap.put(feed.getUrl(), feed);
-        } else if (node instanceof FeedGroup) {
-            final FeedGroup group = (FeedGroup)node;
-            for (FeedNode child : group.getFeeds()) {
-                indexFeed(child);
-            }
+        }
+
+        final List<FeedNode> children = node.getFeeds();
+        for (FeedNode child : children) {
+            indexFeed(child);
+        }
+    }
+
+    final AtomicInteger updateCounter = new AtomicInteger();
+
+    public boolean isUpdating() {
+        return updateCounter.get() > 0;
+    }
+
+    public void onUpdateStarted() {
+        final int count = updateCounter.incrementAndGet();
+        if (count > 0) {
+            EventBus.getInstance().post(new FeedsUpdating());
+        }
+    }
+
+    public void onUpdateComplete() {
+        final int count = updateCounter.decrementAndGet();
+        if (count == 0) {
+            EventBus.getInstance().post(new FeedsUpdated());
         }
     }
 
     public void updateFeed(final Feed feed) {
+        onUpdateStarted();
         new UpdateFeedTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, feed);
     }
 
@@ -78,7 +103,8 @@ public class FeedCache {
         }
     }
 
-    public void syncFeed(Feed updatedFeed) {
+
+    public void onFeedUpdated(Feed updatedFeed) {
         final Feed feed = getFeed(updatedFeed.getUrl());
         feed.refresh(updatedFeed);
         Sack<Feed> sack = Sack.open(Feed.class, CacheManager.getFeedPath(updatedFeed));

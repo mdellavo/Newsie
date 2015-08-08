@@ -1,6 +1,5 @@
 package org.quuux.newsie.tasks;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import org.quuux.newsie.Log;
@@ -8,10 +7,8 @@ import org.quuux.newsie.data.CacheManager;
 import org.quuux.newsie.data.Feed;
 import org.quuux.newsie.data.FeedCache;
 import org.quuux.newsie.data.FeedUtils;
-import org.quuux.sack.Sack;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class UpdateFeedTask extends AsyncTask<Feed, Void, List<Feed>> {
@@ -36,11 +33,13 @@ public class UpdateFeedTask extends AsyncTask<Feed, Void, List<Feed>> {
     protected void onPostExecute(List<Feed> updatedFeeds) {
         super.onPostExecute(updatedFeeds);
 
-        if (updatedFeeds == null)
-            return;
-
-        for (Feed updatedFeed : updatedFeeds) {
-            FeedCache.getInstance().syncFeed(updatedFeed);
+        final FeedCache cache = FeedCache.getInstance();
+        if (updatedFeeds != null) {
+            for (Feed updatedFeed : updatedFeeds) {
+                cache.onFeedUpdated(updatedFeed);
+            }
         }
+
+        cache.onUpdateComplete();
     }
 }
