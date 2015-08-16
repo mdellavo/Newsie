@@ -80,7 +80,6 @@ public class FeedFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
-                Log.d(TAG, "selected: %s", position);
                 list.attachWebView(webviews.get(position));
             }
 
@@ -182,7 +181,8 @@ public class FeedFragment extends Fragment {
             title.setText(item.getTitle());
             final String mime = "text/html";
             final String encoding = "utf-8";
-            content.loadDataWithBaseURL(null, item.getDisplayContent(), mime, encoding, null);
+            final String template = title.getContext().getString(R.string.feed_item_boilerplate);
+            content.loadDataWithBaseURL(null, item.getDisplayContent(template), mime, encoding, null);
         }
     }
 

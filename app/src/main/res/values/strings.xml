@@ -10,4 +10,31 @@
     <string name="action_mark_as_read">Mark as read</string>
     <string name="action_mark_all_as_read">Mark all as read</string>
 
+    <string name="feed_item_boilerplate">
+        <![CDATA[
+
+        <!doctype html>
+        <html class="no-js" lang="">
+        <head>
+            <meta charset="utf-8">
+            <meta name="HandheldFriendly" content="True">
+            <meta name="MobileOptimized" content="320">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta http-equiv="cleartype" content="on">
+            <style>
+                body {
+                    font-size: 1em;
+                    line-height: 1.4;
+                    font-family: sans-serif-light;
+                 }
+            </style>
+        </head>
+        <body>
+            %s
+        </body>
+        </html>
+
+        ]]>
+    </string>
+
 </resources>

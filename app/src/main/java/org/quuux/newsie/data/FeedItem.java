@@ -90,22 +90,16 @@ public class FeedItem {
         this.content = content;
     }
 
-    public String getDisplayContent() {
-        final StringBuilder contentBuilder = new StringBuilder();
-        contentBuilder.append("<html>");
-        contentBuilder.append("<body>");
-
+    public String getDisplayContent(final String template) {
+        final String content;
         if (!TextUtils.isEmpty(getContent()))
-            contentBuilder.append(getContent());
+            content = getContent();
         else if (!TextUtils.isEmpty(getDescription()))
-            contentBuilder.append(getDescription());
+            content = getDescription();
         else
-            contentBuilder.append("(no content)");
+            content = "<em>(no content)</em>";
 
-        contentBuilder.append("</body>");
-        contentBuilder.append("</html>");
-
-        return contentBuilder.toString();
+        return String.format(template, content);
     }
 
     public boolean isRead() {
