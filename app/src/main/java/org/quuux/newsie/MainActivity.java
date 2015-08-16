@@ -12,6 +12,7 @@ import android.widget.ListView;
 import com.squareup.otto.Subscribe;
 
 import org.quuux.newsie.data.Feed;
+import org.quuux.newsie.data.FeedCache;
 import org.quuux.newsie.events.FeedsLoaded;
 import org.quuux.newsie.ui.FeedFragment;
 import org.quuux.newsie.ui.IndexFragment;
@@ -31,7 +32,10 @@ public class MainActivity extends AppCompatActivity implements IndexFragment.Lis
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.drawer);
 
-        showProgress();
+        if (FeedCache.getInstance().hasRoot())
+            showIndex();
+        else
+            showProgress();
     }
 
     @Override

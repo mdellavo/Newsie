@@ -13,6 +13,7 @@ import org.quuux.newsie.data.FeedNode;
 import org.quuux.sack.Sack;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class ScanFeedsTask extends AsyncTask<Void, Void, FeedGroup> {
     private static final String TAG = Log.buildTag(ScanFeedsTask.class);
@@ -38,7 +39,6 @@ public class ScanFeedsTask extends AsyncTask<Void, Void, FeedGroup> {
             Log.d(TAG, "error loading feed: %s", path);
             return null;
         }
-
         return result.second;
     }
 
@@ -48,17 +48,19 @@ public class ScanFeedsTask extends AsyncTask<Void, Void, FeedGroup> {
 
         final FeedGroup group = new FeedGroup(path.getName());
 
-        final String[] filenames = path.list();
-        if (filenames != null) {
-            for (String filename : filenames) {
-                final File file = new File(path, filename);
+        final File[] files = path.listFiles();
+
+        Log.d(TAG, "filenames: %s", Arrays.toString(files));
+
+        if (files != null) {
+            for (File file : files) {
 
                 Log.d(TAG, "consider: %s", file);
 
                 FeedNode feed = null;
                 if (file.isDirectory()) {
                     feed = loadFeedGroup(file);
-                } else if (filename.endsWith(".json")) {
+                } else if (file.getName().endsWith(".json")) {
                     feed = loadFeed(file);
                 }
 

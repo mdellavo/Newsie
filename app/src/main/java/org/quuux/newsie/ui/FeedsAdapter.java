@@ -77,10 +77,13 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedViewHold
     }
 
     public void update() {
+        Log.d(TAG, "updating feeds...");
+
         feeds.clear();
 
         final FeedCache cache = FeedCache.getInstance();
         addFeeds(cache.getRoot());
+        notifyDataSetChanged();
     }
 
     private void addFeeds(FeedGroup group) {

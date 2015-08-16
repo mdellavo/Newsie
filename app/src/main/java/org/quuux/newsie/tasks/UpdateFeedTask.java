@@ -17,9 +17,6 @@ public class UpdateFeedTask extends AsyncTask<Feed, Void, List<Feed>> {
     @Override
     protected List<Feed> doInBackground(Feed... feeds) {
 
-        final File path = CacheManager.getFeedPath(feeds[0]);
-        path.getParentFile().mkdirs();
-
         final long t1 = System.currentTimeMillis();
         final List<Feed> rv = FeedUtils.parseUrl(feeds[0].getUrl());
         final long t2 = System.currentTimeMillis();

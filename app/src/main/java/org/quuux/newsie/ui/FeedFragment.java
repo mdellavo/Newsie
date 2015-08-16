@@ -5,9 +5,15 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,9 +36,10 @@ public class FeedFragment extends Fragment {
     private Feed feed;
 
     private Listener listener;
-    private RecyclerView list;
-    private LinearLayoutManager layoutManager;
+    private VerticalViewPager list;
     private Adapter adapter;
+
+    private SparseArray<WebView> webviews = new SparseArray<>();
 
     public static FeedFragment newInstance(final Feed feed) {
         FeedFragment fragment = new FeedFragment();
@@ -58,12 +65,26 @@ public class FeedFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
-        list = (RecyclerView) view.findViewById(R.id.list);
-        layoutManager = new LinearLayoutManager(getActivity());
-        list.setLayoutManager(layoutManager);
+        list = (VerticalViewPager) view.findViewById(R.id.list);
 
         adapter = new Adapter(feed);
         list.setAdapter(adapter);
+        list.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.d(TAG, "selected: %s", position);
+                list.attachWebView(webviews.get(position));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         return view;
     }
@@ -88,14 +109,20 @@ public class FeedFragment extends Fragment {
     public interface Listener {
     }
 
-    static class FeedItemViewHolder extends RecyclerView.ViewHolder {
+    static class FeedItemViewHolder {
 
+        FeedItem item;
+
+        View itemView;
         TextView title;
         WebView content;
 
         @SuppressLint("SetJavaScriptEnabled")
-        public FeedItemViewHolder(View itemView) {
-            super(itemView);
+        public FeedItemViewHolder(final FeedItem item, final View itemView) {
+
+            this.item = item;
+
+            this.itemView = itemView;
             title = (TextView)itemView.findViewById(R.id.title);
             content = (WebView)itemView.findViewById(R.id.content);
 
@@ -106,65 +133,74 @@ public class FeedFragment extends Fragment {
                 settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
 
             settings.setLoadsImagesAutomatically(true);
+            settings.setLoadWithOverviewMode(true);
+            settings.setUseWideViewPort(true);
+            settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+
+            settings.setSupportZoom(true);
+            settings.setBuiltInZoomControls(true);
+            settings.setDisplayZoomControls(false);
 
             CookieManager.getInstance().setAcceptCookie(true);
 
             settings.setJavaScriptEnabled(true);
 
             content.setBackgroundColor(content.getResources().getColor(android.R.color.white));
+            content.onResume();
+        }
+
+        void bind() {
+            title.setText(item.getTitle());
+            final String mime = "text/html";
+            final String encoding = "utf-8";
+            content.loadDataWithBaseURL(null, item.getDisplayContent(), mime, encoding, null);
         }
     }
 
-    static class Adapter extends RecyclerView.Adapter<FeedItemViewHolder> {
+    class Adapter extends PagerAdapter {
 
         final Feed feed;
+
         public Adapter(final Feed feed) {
             this.feed = feed;
         }
 
         @Override
-        public int getItemViewType(int position) {
-            return position;
-        }
+        public Object instantiateItem(final ViewGroup parent, final int position) {
+            final FeedItem item = this.feed.getItems().get(position);
+            Log.d(TAG, "instantiate position=%s / item=%s", position, item);
 
-        @Override
-        public FeedItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            final View view = inflater.inflate(R.layout.feed_item_item, parent, false);
-            return new FeedItemViewHolder(view);
+            final View view = inflater.inflate(R.layout.feed_item_item, null);
+            final FeedItemViewHolder holder = new FeedItemViewHolder(item, view);
+            view.setTag(holder);
+            holder.bind();
+
+            parent.addView(view);
+
+            webviews.put(position, holder.content);
+            if (position == 0)
+                list.attachWebView(webviews.get(0));
+
+            return view;
         }
 
         @Override
-        public void onBindViewHolder(FeedItemViewHolder holder, int position) {
-            final FeedItem item = feed.getItems().get(position);
-            holder.title.setText(item.getTitle());
-            final String mime = "text/html";
-            final String encoding = "utf-8";
-
-            final StringBuilder contentBuilder = new StringBuilder();
-            contentBuilder.append("<html>");
-            contentBuilder.append("<body>");
-
-            if (!TextUtils.isEmpty(item.getContent()))
-                contentBuilder.append(item.getContent());
-            else if (!TextUtils.isEmpty(item.getDescription()))
-                contentBuilder.append(item.getDescription());
-            else
-                contentBuilder.append("(no content)");
-
-            contentBuilder.append("</body>");
-            contentBuilder.append("</html>");
-
-            final String content = contentBuilder.toString();
-            Log.d(TAG, "content= %s", content);
-
-            holder.content.loadDataWithBaseURL(null, content, mime, encoding, null);
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View)object);
+            webviews.delete(position);
         }
 
         @Override
-        public int getItemCount() {
+        public int getCount() {
             return feed.getItems().size();
         }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
     }
 
 }

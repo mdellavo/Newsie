@@ -1,5 +1,7 @@
 package org.quuux.newsie.data;
 
+import android.text.TextUtils;
+
 import java.util.Date;
 
 public class FeedItem {
@@ -65,5 +67,23 @@ public class FeedItem {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getDisplayContent() {
+        final StringBuilder contentBuilder = new StringBuilder();
+        contentBuilder.append("<html>");
+        contentBuilder.append("<body>");
+
+        if (!TextUtils.isEmpty(getContent()))
+            contentBuilder.append(getContent());
+        else if (!TextUtils.isEmpty(getDescription()))
+            contentBuilder.append(getDescription());
+        else
+            contentBuilder.append("(no content)");
+
+        contentBuilder.append("</body>");
+        contentBuilder.append("</html>");
+
+        return contentBuilder.toString();
     }
 }

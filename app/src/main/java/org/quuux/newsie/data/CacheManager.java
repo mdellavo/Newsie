@@ -1,7 +1,8 @@
 package org.quuux.newsie.data;
 
-import android.content.Context;
 import android.net.Uri;
+
+import org.quuux.newsie.tasks.EnsureCacheTask;
 
 import java.io.File;
 
@@ -11,6 +12,7 @@ public class CacheManager {
 
     public static void setCacheDir(final File base) {
         CacheManager.base = base;
+        new EnsureCacheTask().execute();
     }
 
     public static File getFeedsPath() {

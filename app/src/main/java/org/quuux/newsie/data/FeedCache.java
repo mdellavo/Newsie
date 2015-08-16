@@ -12,6 +12,7 @@ import org.quuux.newsie.tasks.ScanFeedsTask;
 import org.quuux.newsie.tasks.UpdateFeedTask;
 import org.quuux.sack.Sack;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class FeedCache {
     private static final String TAG = Log.buildTag(FeedCache.class);
     private static FeedCache instance;
 
-    private FeedGroup root = new FeedGroup("");
+    private FeedGroup root = null;
     private Map<String, Feed> feedMap = new HashMap<>();
 
     protected FeedCache() {}
@@ -31,6 +32,10 @@ public class FeedCache {
         if (instance == null)
             instance = new FeedCache();
         return instance;
+    }
+
+    public boolean hasRoot() {
+        return root != null;
     }
 
     public void setRoot(FeedGroup feedGroup) {
@@ -107,8 +112,15 @@ public class FeedCache {
     public void onFeedUpdated(Feed updatedFeed) {
         final Feed feed = getFeed(updatedFeed.getUrl());
         feed.refresh(updatedFeed);
-        Sack<Feed> sack = Sack.open(Feed.class, CacheManager.getFeedPath(updatedFeed));
-        sack.commit(feed);
+        final File path = CacheManager.getFeedPath(updatedFeed);
+        Log.d(TAG, "committing %s...", path);
+        Sack<Feed> sack = Sack.open(Feed.class, path);
+        sack.commit(feed, new Sack.Listener<Feed>() {
+            @Override
+            public void onResult(Sack.Status status, Feed feed) {
+                Log.d(TAG, "committed %s -> %s", path, status);
+            }
+        });
         EventBus.getInstance().post(new FeedUpdated(feed));
     }
 }

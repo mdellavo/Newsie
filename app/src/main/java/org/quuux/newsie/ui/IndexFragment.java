@@ -16,6 +16,7 @@ import org.quuux.newsie.EventBus;
 import org.quuux.newsie.R;
 import org.quuux.newsie.data.Feed;
 import org.quuux.newsie.data.FeedCache;
+import org.quuux.newsie.events.FeedUpdated;
 import org.quuux.newsie.events.FeedsUpdated;
 import org.quuux.newsie.events.FeedsUpdating;
 
@@ -105,6 +106,11 @@ public class IndexFragment extends Fragment implements FeedsAdapter.Listener, Sw
     @Override
     public void onRefresh() {
         FeedCache.getInstance().updateFeeds();
+    }
+
+    @Subscribe
+    public void onFeedUpdated(final FeedUpdated event) {
+        adapter.update();
     }
 
     @Subscribe
