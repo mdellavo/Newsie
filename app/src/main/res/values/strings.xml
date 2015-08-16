@@ -7,5 +7,7 @@
     <string name="title_activity_import">Import feeds</string>
     <string name="ok">Ok</string>
     <string name="importing_feeds">Your feeds are importing and will be available shortly</string>
+    <string name="action_mark_as_read">Mark as read</string>
+    <string name="action_mark_all_as_read">Mark all as read</string>
 
 </resources>

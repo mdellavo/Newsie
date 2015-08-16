@@ -7,6 +7,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -42,6 +45,7 @@ public class IndexFragment extends Fragment implements FeedsAdapter.Listener, Sw
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if (getArguments() != null) {
         }
     }
@@ -96,6 +100,30 @@ public class IndexFragment extends Fragment implements FeedsAdapter.Listener, Sw
     public void onPause() {
         super.onPause();
         EventBus.getInstance().unregister(this);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_index, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+
+        final boolean rv;
+        switch (item.getItemId()) {
+
+            case R.id.action_mark_all_as_read:
+                FeedCache.getInstance().markAllFeedsAsRead();
+                rv = true;
+                break;
+
+            default:
+                rv = super.onOptionsItemSelected(item);
+        }
+
+        return rv;
     }
 
     @Override

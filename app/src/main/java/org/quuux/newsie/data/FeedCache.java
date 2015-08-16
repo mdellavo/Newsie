@@ -127,4 +127,24 @@ public class FeedCache {
         EventBus.getInstance().post(new FeedUpdated(feed));
 
     }
+
+    public void markFeedAsRead(final Feed feed) {
+        boolean dirty = false;
+
+        for (FeedItem item : feed.getItems()) {
+            if (!item.isRead()) {
+                dirty = true;
+                item.markRead();
+            }
+        }
+
+        if (dirty)
+            commitFeed(feed);
+    }
+
+    public void markAllFeedsAsRead() {
+        for (Feed feed : feedMap.values()) {
+            markFeedAsRead(feed);
+        }
+    }
 }

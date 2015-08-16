@@ -15,6 +15,9 @@ import android.text.TextUtils;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
@@ -54,6 +57,7 @@ public class FeedFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if (getArguments() != null) {
             final String feedUrl = getArguments().getString(ARG_FEED_URL);
             feed = FeedCache.getInstance().getFeed(feedUrl);
@@ -105,6 +109,31 @@ public class FeedFragment extends Fragment {
         super.onDetach();
         listener = null;
     }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_feed, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+
+        final boolean rv;
+        switch (item.getItemId()) {
+
+            case R.id.action_mark_all_as_read:
+                FeedCache.getInstance().markFeedAsRead(feed);
+                rv = true;
+                break;
+
+            default:
+                rv = super.onOptionsItemSelected(item);
+        }
+
+        return rv;
+    }
+
 
     public interface Listener {
     }
