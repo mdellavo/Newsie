@@ -58,7 +58,9 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedViewHold
 
         final FeedNode feed = feeds.get(position);
         viewHolder.title.setText(feed.getDisplayName());
-        viewHolder.unreadCount.setText(String.valueOf(feed.getUnreadCount()));
+
+        final int unreadCount = feed.getUnreadCount();
+        viewHolder.unreadCount.setText(unreadCount > 0 ? String.valueOf(unreadCount) : "");
         Picasso.with(viewHolder.icon.getContext()).load(feed.getIconUrl()).into(viewHolder.icon);
 
         if (feed instanceof Feed) {

@@ -182,6 +182,11 @@ public class FeedFragment extends Fragment {
             if (position == 0)
                 list.attachWebView(webviews.get(0));
 
+            if (!item.isRead()) {
+                item.markRead();
+                FeedCache.getInstance().commitFeed(feed);
+            }
+
             return view;
         }
 

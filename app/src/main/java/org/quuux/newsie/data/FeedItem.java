@@ -17,7 +17,7 @@ public class FeedItem {
 
     private String buildKey() {
         final StringBuilder sb = new StringBuilder();
-        String[] keys = {guid, url, description, title, content, String.valueOf(pubDate.getTime())};
+        String[] keys = {guid, url, description, title, content};
         for (String key : keys)
             if (!TextUtils.isEmpty(key))
                 sb.append(key);

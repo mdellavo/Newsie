@@ -112,15 +112,19 @@ public class FeedCache {
     public void onFeedUpdated(Feed updatedFeed) {
         final Feed feed = getFeed(updatedFeed.getUrl());
         feed.refresh(updatedFeed);
-        final File path = CacheManager.getFeedPath(updatedFeed);
-        Log.d(TAG, "committing %s...", path);
+        commitFeed(feed);
+    }
+
+    public void commitFeed(final Feed feed) {
+        final File path = CacheManager.getFeedPath(feed);
         Sack<Feed> sack = Sack.open(Feed.class, path);
         sack.commit(feed, new Sack.Listener<Feed>() {
             @Override
             public void onResult(Sack.Status status, Feed feed) {
-                Log.d(TAG, "committed %s -> %s", path, status);
+                Log.d(TAG, "committed %s: %s", path, status);
             }
         });
         EventBus.getInstance().post(new FeedUpdated(feed));
+
     }
 }

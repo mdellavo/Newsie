@@ -103,7 +103,12 @@ public class Feed implements FeedNode {
         this.description = other.description;
         this.ttl = other.ttl;
         this.pubDate = other.pubDate;
-        this.items.addAll(other.items);
+        addItems(other.items);
+    }
+
+    private void addItems(final List<FeedItem> items) {
+        for (FeedItem item : items)
+            addItem(item);
     }
 
     public String getLink() {
