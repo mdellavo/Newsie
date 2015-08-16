@@ -31,6 +31,14 @@ public class FeedGroup implements FeedNode {
         return null;
     }
 
+    @Override
+    public int getUnreadCount() {
+        int rv = 0;
+        for (FeedNode feed : feeds)
+            rv += feed.getUnreadCount();
+        return rv;
+    }
+
     public void addFeed(FeedNode feed) {
         feeds.add(feed);
     }

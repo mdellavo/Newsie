@@ -7,4 +7,5 @@ public interface FeedNode {
     List<FeedNode> getFeeds();
 
     String getIconUrl();
+    int getUnreadCount();
 }

@@ -71,7 +71,8 @@ public class Feed implements FeedNode {
     }
 
     public void addItem(FeedItem item) {
-        items.add(item);
+        if (!items.contains(item))
+            items.add(item);
     }
 
     public List<FeedItem> getItems() {
@@ -111,5 +112,14 @@ public class Feed implements FeedNode {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public int getUnreadCount() {
+        int rv = 0;
+        for (FeedItem item : items) {
+            if (!item.isRead())
+                rv++;
+        }
+        return rv;
     }
 }

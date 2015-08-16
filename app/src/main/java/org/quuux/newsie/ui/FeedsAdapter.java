@@ -30,11 +30,12 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedViewHold
 
     public static class FeedViewHolder extends RecyclerView.ViewHolder {
         final ImageView icon;
-        final TextView title;
+        final TextView title, unreadCount;
 
         public FeedViewHolder(View itemView) {
             super(itemView);
             title = (TextView)itemView.findViewById(R.id.title);
+            unreadCount = (TextView)itemView.findViewById(R.id.unread_count);
             icon = (ImageView)itemView.findViewById(R.id.icon);
         }
     }
@@ -57,7 +58,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedViewHold
 
         final FeedNode feed = feeds.get(position);
         viewHolder.title.setText(feed.getDisplayName());
-
+        viewHolder.unreadCount.setText(String.valueOf(feed.getUnreadCount()));
         Picasso.with(viewHolder.icon.getContext()).load(feed.getIconUrl()).into(viewHolder.icon);
 
         if (feed instanceof Feed) {

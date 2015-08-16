@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import java.util.Date;
 
 public class FeedItem {
+
     private String guid;
     private String title;
     private String description;
@@ -12,6 +13,26 @@ public class FeedItem {
     private int ttl;
     private Date pubDate;
     private String content;
+    private boolean read = false;
+
+    private String buildKey() {
+        final StringBuilder sb = new StringBuilder();
+        String[] keys = {guid, url, description, title, content, String.valueOf(pubDate.getTime())};
+        for (String key : keys)
+            if (!TextUtils.isEmpty(key))
+                sb.append(key);
+        return sb.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return buildKey().hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        return (o instanceof FeedItem) && ((FeedItem)o).buildKey().equals(buildKey());
+    }
 
     public String getGuid() {
         return guid;
@@ -85,5 +106,13 @@ public class FeedItem {
         contentBuilder.append("</html>");
 
         return contentBuilder.toString();
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void markRead() {
+        read = true;
     }
 }
