@@ -79,7 +79,7 @@ public class VerticalViewPager extends ViewPager {
             final int scrollY = webview.getScrollY();
             final int contentHeight = webview.getContentHeight();
             final int height = webview.getHeight();
-            final boolean scrolling = contentHeight > height && scrollY > 0 && (height + scrollY) < contentHeight;
+            final boolean scrolling = contentHeight > height && scrollY > 0 && scrollY < contentHeight;
 
             //Log.d(TAG, "height=%s / scrollY=%s / contentHeight=%s / scrolling=%s", height, scrollY, contentHeight, scrolling);
 

@@ -1,5 +1,9 @@
 package org.quuux.newsie;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,6 +35,11 @@ public class ImportActivity extends AppCompatActivity implements OPMLParser.Pars
     private Button submitButton;
     private Adapter adapter;
 
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +49,18 @@ public class ImportActivity extends AppCompatActivity implements OPMLParser.Pars
         listView = (ListView)findViewById(R.id.list);
         submitButton = (Button) findViewById(R.id.submit);
         submitButton.setOnClickListener(this);
+    }
 
-        final File file = new File(getIntent().getData().getPath());
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-        Log.d(TAG, "import: %s", file);
-        OPMLParser.parseAsync(file, this);
-   }
+        if (verifyStoragePermissions()) {
+            final File file = new File(getIntent().getData().getPath());
+            Log.d(TAG, "import: %s", file);
+            OPMLParser.parseAsync(file, this);
+        }
+    }
 
     @Override
     public void onParsed(List<OPMLParser.Node> nodes) {
@@ -62,6 +77,23 @@ public class ImportActivity extends AppCompatActivity implements OPMLParser.Pars
                 finish();
                 break;
         }
+    }
+
+    public boolean verifyStoragePermissions() {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        final boolean granted = permission == PackageManager.PERMISSION_GRANTED;
+        if (!granted) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    this,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+
+        return granted;
     }
 
     private void importFeeds(List<Feed> importedFeeds) {

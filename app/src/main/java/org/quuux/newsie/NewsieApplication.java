@@ -5,7 +5,6 @@ import android.net.http.HttpResponseCache;
 
 import org.quuux.newsie.data.CacheManager;
 import org.quuux.newsie.data.FeedCache;
-import org.quuux.newsie.tasks.EnsureCacheTask;
 
 import java.io.File;
 import java.io.IOException;
