@@ -74,10 +74,10 @@ public class FeedUtils {
             BaseParser p;
             if ("rss".equals(startTag))
                 p = new RSSParser(parser, url);
-            else if ("atom".equals(startTag))
+            else if ("feed".equals(startTag))
                 p = new AtomParser(parser, url);
             else
-                throw new RuntimeException("unknown feed type: " + startTag);
+                return new ArrayList<>();
             p.parse();
             return p.getFeeds();
         } finally {

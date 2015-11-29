@@ -20,7 +20,10 @@ public abstract class BaseParser {
         this.url = url;
     }
 
-    public abstract String getNamespace();
+    public String getNamespace() {
+        return null;
+    }
+
     public abstract void parse() throws XmlPullParserException, IOException;
 
     public List<Feed> getFeeds() {

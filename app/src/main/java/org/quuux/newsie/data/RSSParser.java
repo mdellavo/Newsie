@@ -88,9 +88,4 @@ public class RSSParser extends BaseParser {
 
         return item;
     }
-
-    @Override
-    public String getNamespace() {
-        return null;
-    }
 }
