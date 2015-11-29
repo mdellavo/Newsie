@@ -1,10 +1,9 @@
 package org.quuux.newsie.tasks;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Pair;
 
-import org.quuux.newsie.Log;
+import org.quuux.feller.Log;
 import org.quuux.newsie.data.CacheManager;
 import org.quuux.newsie.data.Feed;
 import org.quuux.newsie.data.FeedCache;

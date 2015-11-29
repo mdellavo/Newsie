@@ -2,8 +2,8 @@ package org.quuux.newsie.data;
 
 import android.os.AsyncTask;
 
+import org.quuux.feller.Log;
 import org.quuux.newsie.EventBus;
-import org.quuux.newsie.Log;
 import org.quuux.newsie.events.FeedUpdated;
 import org.quuux.newsie.events.FeedsLoaded;
 import org.quuux.newsie.events.FeedsUpdated;

@@ -3,6 +3,7 @@ package org.quuux.newsie;
 import android.app.Application;
 import android.net.http.HttpResponseCache;
 
+import org.quuux.feller.Log;
 import org.quuux.newsie.data.CacheManager;
 import org.quuux.newsie.data.FeedCache;
 

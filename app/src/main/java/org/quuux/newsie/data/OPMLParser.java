@@ -4,7 +4,7 @@ package org.quuux.newsie.data;
 import android.os.AsyncTask;
 import android.util.Xml;
 
-import org.quuux.newsie.Log;
+import org.quuux.feller.Log;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 

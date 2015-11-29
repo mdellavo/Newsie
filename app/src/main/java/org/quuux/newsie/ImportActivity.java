@@ -3,6 +3,7 @@ package org.quuux.newsie;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import org.quuux.feller.Log;
 import org.quuux.newsie.data.Feed;
 import org.quuux.newsie.data.FeedCache;
 import org.quuux.newsie.data.FeedGroup;
@@ -36,10 +38,6 @@ public class ImportActivity extends AppCompatActivity implements OPMLParser.Pars
     private Adapter adapter;
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,15 +78,22 @@ public class ImportActivity extends AppCompatActivity implements OPMLParser.Pars
     }
 
     public boolean verifyStoragePermissions() {
-        // Check if we have write permission
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return true;
+
+        final String[] permissions = {
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+
         int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         final boolean granted = permission == PackageManager.PERMISSION_GRANTED;
         if (!granted) {
-            // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(
                     this,
-                    PERMISSIONS_STORAGE,
+                    permissions,
                     REQUEST_EXTERNAL_STORAGE
             );
         }

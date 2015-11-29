@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 
-import org.quuux.newsie.Log;
+import org.quuux.feller.Log;
 
 public class VerticalViewPager extends ViewPager {
 

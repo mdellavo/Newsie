@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.quuux.newsie.Log;
+import org.quuux.feller.Log;
 import org.quuux.newsie.R;
 import org.quuux.newsie.data.FeedCache;
 import org.quuux.newsie.data.Feed;

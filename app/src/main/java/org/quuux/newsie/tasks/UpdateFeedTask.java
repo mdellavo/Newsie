@@ -2,13 +2,11 @@ package org.quuux.newsie.tasks;
 
 import android.os.AsyncTask;
 
-import org.quuux.newsie.Log;
-import org.quuux.newsie.data.CacheManager;
+import org.quuux.feller.Log;
 import org.quuux.newsie.data.Feed;
 import org.quuux.newsie.data.FeedCache;
 import org.quuux.newsie.data.FeedUtils;
 
-import java.io.File;
 import java.util.List;
 
 public class UpdateFeedTask extends AsyncTask<Feed, Void, List<Feed>> {

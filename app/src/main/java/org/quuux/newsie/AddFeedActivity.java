@@ -1,7 +1,6 @@
 package org.quuux.newsie;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Patterns;
@@ -13,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.quuux.feller.Log;
 import org.quuux.newsie.data.FeedCache;
 import org.quuux.newsie.data.Feed;
 import org.quuux.newsie.data.FeedUtils;
